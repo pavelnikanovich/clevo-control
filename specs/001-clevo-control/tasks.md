@@ -108,7 +108,7 @@ the same file and are therefore sequential.
 - [x] T040 [US6] `debian/control`, `debian/rules`, `debian/changelog`, `debian/copyright`, `debian/source/format`
 - [x] T041 [US6] `debian/*.install`, `.dkms`, `.manpages`, `.udev`, `.service`, `.tmpfiles` for the three packages
 - [x] T042 [P] [US6] `data/io.github.pavelnikanovich.ClevoControl.metainfo.xml` with modalias provides
-- [ ] T043 [US6] Build packages, run `lintian` with pedantic checks, fix or document every tag
+- [x] T043 [US6] Build packages, run `lintian` with pedantic checks, fix or document every tag
 
 ---
 

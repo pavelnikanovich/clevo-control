@@ -1,0 +1,3 @@
+# These packages are built from the upstream repository, not uploaded to the
+# Debian archive, so there is no ITP bug for the first changelog entry to close.
+gnome-shell-extension-clevo-control: initial-upload-closes-no-bugs

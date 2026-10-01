@@ -124,6 +124,14 @@ clean:
 	rm -f module/*.o module/*.ko module/*.mod module/*.mod.c module/.*.cmd \
 	      module/Module.symvers module/modules.order
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +
+	rm -rf debian/.debhelper debian/tmp debian/files debian/debhelper-build-stamp \
+	       debian/*.substvars debian/*.debhelper debian/*.debhelper.log \
+	       debian/clevo-control debian/clevo-control-dkms \
+	       debian/gnome-shell-extension-clevo-control
+
+# The install targets create the same parent directories; run in parallel
+# (debhelper passes -j) they race, and there is nothing here worth parallelising.
+.NOTPARALLEL:
 
 .PHONY: all generate module test lint check install install-tools install-extension \
         install-dkms uninstall deb clean

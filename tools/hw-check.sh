@@ -26,7 +26,11 @@ fi
 echo "board:    $(cat /sys/class/dmi/id/board_name 2>/dev/null)"
 echo "kernel:   $(uname -r)"
 echo "module:   $(if [ -d /sys/module/clevo_control ]; then echo loaded; else echo not loaded; fi)"
-echo "acpi:     $(ls /sys/bus/acpi/devices/ 2>/dev/null | grep '^CLV0001' | tr '\n' ' ')"
+acpi=
+for dev in /sys/bus/acpi/devices/CLV0001*; do
+	[ -e "$dev" ] && acpi="$acpi${dev##*/} "
+done
+echo "acpi:     ${acpi:-none}"
 for dev in /sys/bus/platform/devices/CLV0001:* /sys/bus/wmi/devices/ABBC0F6[BD]-*; do
 	[ -e "$dev" ] || continue
 	driver=$(basename "$(readlink "$dev/driver" 2>/dev/null)" 2>/dev/null)

@@ -16,12 +16,14 @@ if [ -f debian/changelog ]; then
 	fi
 fi
 
-# A version number hard-coded anywhere else will go stale.
-if grep -rnF --exclude-dir=.git --exclude-dir=build --exclude-dir=specs --exclude-dir=.specify \
-	--exclude-dir=.claude --exclude=VERSION --exclude=CHANGELOG.md --exclude=changelog \
-	"$version" . ; then
-	echo "the version $version is spelled out in the files above; use @VERSION@ or drop it" >&2
-	status=1
+# A version number hard-coded anywhere else will go stale. Only files under
+# version control are looked at, so build output does not count.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+	if git ls-files -z | grep -zvE '^(VERSION|CHANGELOG\.md|debian/changelog|specs/|\.specify/|\.claude/)' |
+		xargs -0 grep -nF -- "$version"; then
+		echo "the version $version is spelled out in the files above; use @VERSION@ or drop it" >&2
+		status=1
+	fi
 fi
 
 exit $status

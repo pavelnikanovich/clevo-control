@@ -3,7 +3,7 @@
 # Every static check of the project. A missing tool skips its check with a
 # note, unless STRICT=1 (continuous integration), where it is an error.
 set -u
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 KDIR=${KDIR:-/lib/modules/$(uname -r)/build}
 BUILD=${BUILD:-build}

@@ -1,7 +1,12 @@
 #!/usr/bin/make -f
 
+VERSION := $(shell cat VERSION)
+
 %:
 	dh $@
 
 # The module is built by DKMS on the target machine, not here: the default
 # target only generates the files that carry the version.
+
+override_dh_dkms:
+	dh_dkms -V $(VERSION)

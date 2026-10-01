@@ -28,6 +28,11 @@ make deb        # Debian packages (debhelper, dh-dkms, dh-python)
 
 `make lint` skips checks whose tool is not installed; `STRICT=1 make lint` fails instead.
 
+After `make deb`, check the packages with `lintian --profile debian -EvIL +pedantic ../*.changes`:
+it must report nothing. (With the Ubuntu profile lintian objects to the `unstable` distribution in
+`debian/changelog`; the ITP-bug warning for the first changelog entry is overridden, because these
+packages are built from this repository and not uploaded to the Debian archive.)
+
 ## Rules
 
 They are spelled out in [.specify/memory/constitution.md](.specify/memory/constitution.md). In

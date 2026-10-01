@@ -92,8 +92,7 @@ NH5x_NH7xHP):
 | Commands through `CLV0001` `_DSM` | backlight color and brightness, profiles and their CPU limits verified |
 | Commands through WMI | not exercised by this module on this machine (ACPI is preferred) |
 | Backlight and touchpad/airplane Fn keys, Quiet menu entry, tray, suspend/resume | verified by hand |
-| Color restored when the backlight appears at boot | verified |
-| Color saved at shutdown | not yet verified |
+| Color saved at shutdown (chosen with Fn + `/`) and restored at boot | verified |
 | Kernels other than 7.0 | not built; every kernel API used was checked against the 6.14 headers |
 | 3-zone keyboard, WMI-only event delivery | no hardware available |
 

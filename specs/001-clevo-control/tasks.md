@@ -130,7 +130,7 @@ the same file and are therefore sequential.
 - [x] T052 Migrate the reference laptop: remove the old package, install the three packages, carry over the saved colour, switch extensions
 - [x] T053 Run the hardware checklist in quickstart.md, including suspend/resume
 - [x] T054 Verify every command, path and option in README and man pages
-- [ ] T055 Independent review of the finished project; resolve findings
+- [x] T055 Independent review of the finished project; resolve findings
 
 ---
 

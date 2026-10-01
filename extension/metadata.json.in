@@ -1,0 +1,8 @@
+{
+  "uuid": "clevo-control@pavelnikanovich.github.io",
+  "name": "Clevo Control",
+  "description": "Adds the firmware 'Quiet' performance profile of Clevo laptops to the Power Mode quick-settings menu.\n\nRequires the clevo-control kernel module, which exposes the firmware profiles as a platform profile, and its device rule, which lets the user select a profile.",
+  "shell-version": ["50"],
+  "url": "https://github.com/pavelnikanovich/clevo-control",
+  "version-name": "@VERSION@"
+}

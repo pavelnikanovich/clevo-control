@@ -1,0 +1,28 @@
+# build output
+/build/
+/dist/
+__pycache__/
+*.pyc
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# kernel build output
+*.ko
+*.o
+*.mod
+*.mod.c
+*.cmd
+.tmp_versions/
+Module.symvers
+modules.order
+
+# Debian build output
+/debian/.debhelper/
+/debian/files
+/debian/*.substvars
+/debian/*.debhelper.log
+/debian/debhelper-build-stamp
+/debian/clevo-control/
+/debian/clevo-control-dkms/
+/debian/gnome-shell-extension-clevo-control/

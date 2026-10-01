@@ -1,0 +1,46 @@
+.\" SPDX-License-Identifier: GPL-2.0-or-later
+.TH CLEVO-CONTROL-TRAY 1 "" "clevo-control @VERSION@" "User Commands"
+.SH NAME
+clevo\-control\-tray \- tray applet for the keyboard backlight of Clevo laptops
+.SH SYNOPSIS
+.B clevo\-control\-tray
+.SH DESCRIPTION
+.B clevo\-control\-tray
+shows an indicator in the system tray with a menu:
+.TP
+.B Choose color…
+A color chooser. The chosen color is remembered, as with
+.BR "clevoctl backlight color" .
+.TP
+Preset colors
+White, red, orange, yellow, green, cyan, blue, purple, pink.
+.TP
+.B Brightness…
+A window with a slider and the brightness as a percentage. It follows changes
+made elsewhere, for example with the Fn keys.
+.TP
+.B Profile
+The firmware performance profile, when the machine supports it.
+.PP
+The applet is started on login. Only one instance runs per session; starting
+it again, for example from the application menu, opens the color chooser of
+the running instance. While the keyboard backlight device is absent the
+backlight entries are disabled, and they become usable when it appears.
+.PP
+On GNOME the indicator needs an AppIndicator extension, such as the
+.B Ubuntu AppIndicators
+extension enabled by default on Ubuntu.
+.SH EXIT STATUS
+0 when quit from the menu or when a running instance was activated, 1 if the
+GTK or AppIndicator bindings are missing.
+.SH FILES
+.TP
+.I /etc/xdg/autostart/io.github.pavelnikanovich.ClevoControl.desktop
+Autostart entry. Disable it in the desktop's startup applications settings, or
+override it with a file of the same name in
+.I ~/.config/autostart
+containing
+.BR Hidden=true .
+.SH SEE ALSO
+.BR clevoctl (1),
+.BR clevo\-control (7)

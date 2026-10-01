@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+# The module is built by DKMS on the target machine, not here: the default
+# target only generates the files that carry the version.

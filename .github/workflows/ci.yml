@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # The module needs kernel 6.14 or later; the runner image may be older.
+    container: ubuntu:26.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential linux-headers-generic kmod \
+            python3 python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1 gir1.2-notify-0.7 \
+            python3-mypy ruff gjs nodejs \
+            udev systemd desktop-file-utils appstream man-db shellcheck \
+            debhelper dh-dkms dh-python lintian fakeroot
+
+      - name: Build the kernel module
+        run: |
+          kdir=$(ls -d /lib/modules/*/build | sort -V | tail -1)
+          make module KDIR="$kdir"
+
+      - name: Tests
+        run: make test
+
+      - name: Lint
+        run: |
+          kdir=$(ls -d /lib/modules/*/build | sort -V | tail -1)
+          STRICT=1 make lint KDIR="$kdir"
+
+      - name: Debian packages
+        run: |
+          make deb
+          lintian --fail-on error,warning ../*.changes

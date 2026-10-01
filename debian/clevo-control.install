@@ -1,0 +1,9 @@
+etc/xdg/autostart
+usr/bin
+usr/lib/systemd
+usr/lib/tmpfiles.d
+usr/lib/udev
+usr/share/applications
+usr/share/clevo-control
+usr/share/man
+usr/share/metainfo

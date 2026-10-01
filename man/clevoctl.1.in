@@ -1,0 +1,149 @@
+.\" SPDX-License-Identifier: GPL-2.0-or-later
+.TH CLEVOCTL 1 "" "clevo-control @VERSION@" "User Commands"
+.SH NAME
+clevoctl \- keyboard backlight and performance profile of Clevo laptops
+.SH SYNOPSIS
+.B clevoctl status
+.br
+.B clevoctl backlight color
+.I COLOR
+.br
+.B clevoctl backlight brightness
+.I LEVEL
+.br
+.B clevoctl backlight
+.RB { on | off | save | restore }
+.br
+.B clevoctl profile
+.RB { list | get }
+.br
+.B clevoctl profile set
+.I PROFILE
+.br
+.B clevoctl \-\-version
+.SH DESCRIPTION
+.B clevoctl
+controls the devices exposed by the
+.B clevo\-control
+kernel module: the RGB keyboard backlight and the firmware performance
+profile. Members of the
+.B plugdev
+group can use it without root.
+.SH COMMANDS
+.TP
+.B status
+Show the backlight color, the brightness, the color saved for the next boot
+and the active performance profile. A device that does not exist is shown as
+.BR "not available" .
+.SS Backlight
+.TP
+.BI "backlight color " COLOR
+Set the color and remember it.
+.I COLOR
+is
+.BR #RRGGBB ,
+.BR RRGGBB ,
+.B #RGB
+or one of the names
+.BR white ,
+.BR red ,
+.BR orange ,
+.BR yellow ,
+.BR green ,
+.BR cyan ,
+.BR blue ,
+.BR purple ,
+.BR pink ,
+.BR magenta .
+.TP
+.BI "backlight brightness " LEVEL
+Set the brightness.
+.I LEVEL
+is an integer from 0 to the maximum shown by
+.BR status ,
+or a percentage from
+.B 0%
+to
+.BR 100% .
+.TP
+.B backlight on
+Turn the backlight on at half brightness if it is off.
+.TP
+.B backlight off
+Turn the backlight off (brightness 0).
+.TP
+.B backlight save
+Remember the color shown now, for example one chosen with the Fn color key.
+Run when
+.B clevo\-control\-backlight.service
+stops.
+.TP
+.B backlight restore
+Apply the remembered color. Run when
+.B clevo\-control\-backlight.service
+starts. Nothing remembered is not an error.
+.SS Performance profile
+.TP
+.B profile list
+List the available profiles, the active one marked with an asterisk.
+.TP
+.B profile get
+Print the active profile.
+.TP
+.BI "profile set " PROFILE
+Select a profile:
+.BR quiet ,
+.BR low\-power ,
+.B balanced
+or
+.BR performance .
+See
+.BR clevo\-control (7)
+for how this interacts with the desktop power mode.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+A device is missing, access was denied, a value is invalid, or an I/O error
+occurred. One line is printed to standard error.
+.TP
+.B 2
+Usage error.
+.SH FILES
+.TP
+.I /var/lib/clevo\-control/backlight\-color
+The remembered color: six hexadecimal digits.
+.TP
+.I /sys/class/leds/rgb:kbd_backlight/
+The keyboard backlight.
+.TP
+.I /sys/class/platform\-profile/
+The platform profile handler named
+.BR clevo .
+.SH ENVIRONMENT
+For testing, and for a backlight with another name:
+.TP
+.B CLEVO_CONTROL_LED
+LED directory used instead of
+.IR /sys/class/leds/rgb:kbd_backlight .
+.TP
+.B CLEVO_CONTROL_PROFILE_CLASS
+Directory used instead of
+.IR /sys/class/platform\-profile .
+.TP
+.B CLEVO_CONTROL_STATE
+File used instead of
+.IR /var/lib/clevo\-control/backlight\-color .
+.SH EXAMPLES
+.EX
+clevoctl backlight color '#ff00ff'
+clevoctl backlight color orange
+clevoctl backlight brightness 50%
+clevoctl profile set quiet
+.EE
+.SH SEE ALSO
+.BR clevo\-control (7),
+.BR clevo\-control\-tray (1),
+.BR powerprofilesctl (1)

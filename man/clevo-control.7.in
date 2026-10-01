@@ -1,0 +1,145 @@
+'\" t
+.\" SPDX-License-Identifier: GPL-2.0-or-later
+.TH CLEVO-CONTROL 7 "" "clevo-control @VERSION@" "Miscellaneous"
+.SH NAME
+clevo\-control \- keyboard backlight, Fn keys and performance profiles of Clevo laptops
+.SH DESCRIPTION
+The
+.B clevo\-control
+kernel module drives three functions of Clevo laptop firmware through standard
+kernel interfaces, so that the desktop handles most of them by itself. The
+tools around it are
+.BR clevoctl (1),
+.BR clevo\-control\-tray (1)
+and a GNOME Shell extension.
+.SS Keyboard backlight
+An RGB keyboard is the LED
+.IR /sys/class/leds/rgb:kbd_backlight ,
+with attributes
+.B brightness
+(0\-255) and
+.B multi_intensity
+(three values in the order given by
+.BR multi_index ).
+Keyboards with three zones show the same color in all zones. The brightness is
+remembered across reboots by
+.BR systemd\-backlight@.service (8),
+the color by
+.B clevo\-control\-backlight.service
+in
+.IR /var/lib/clevo\-control/backlight\-color .
+.SS Fn keys
+With an RGB keyboard the module takes the backlight keys over from the
+firmware. Key positions as found on the NH5x_NH7xHP (numeric keypad):
+.TP
+.B Fn + /
+Next color: white, red, orange, yellow, green, cyan, blue, purple, pink.
+Handled by the module.
+.TP
+.B Fn + *
+Backlight on/off.
+.TP
+.BR "Fn + \-" ", " "Fn + +"
+Brightness down/up.
+.PP
+On/off and brightness are reported as the keys
+.BR KEY_KBDILLUMTOGGLE ,
+.B KEY_KBDILLUMDOWN
+and
+.B KEY_KBDILLUMUP
+and acted on by the desktop through
+.BR upowerd (8).
+Touchpad and airplane-mode events reported by the firmware are forwarded as
+.B KEY_F21
+and
+.BR KEY_RFKILL .
+Other Fn keys (volume, screen brightness, webcam) keep being handled by the
+firmware or the regular keyboard driver.
+.PP
+On keyboards without RGB backlight the module leaves all keys to the firmware.
+.SS Performance profiles
+The firmware profiles are exposed as the kernel platform profile
+.I /sys/firmware/acpi/platform_profile
+(handler
+.BR clevo ):
+.TS
+l l l.
+platform profile	firmware profile	desktop power mode
+_
+quiet	quiet	Quiet (GNOME extension)
+low\-power	power saving	Power Saver
+balanced	entertainment	Balanced
+performance	performance	Performance
+.TE
+.PP
+.BR power\-profiles\-daemon (8)
+switches the platform profile together with the desktop power mode. It reads
+the available profiles when it starts.
+.PP
+The firmware cannot be asked which profile is active, nor whether it
+implements the command. The module therefore offers the profiles only on
+boards where their effect has been measured (or with
+.BR force_profiles ),
+sets
+.B balanced
+when it binds, reports the last profile it set, and sets it again after
+suspend.
+.SS Quiet in the GNOME power menu
+The desktop's three power modes cannot select the
+.B quiet
+profile. The GNOME Shell extension
+.B Clevo Control
+.RI ( clevo\-control@pavelnikanovich.github.io )
+adds a fourth entry,
+.BR Quiet ,
+to the Power Mode menu of the quick settings. While quiet is active
+.BR power\-profiles\-daemon (8)
+reports Power Saver, which is also what the Power panel of GNOME Settings
+shows. If the menu cannot be extended, or the daemon is not running, the
+extension shows a separate
+.B Quiet Mode
+toggle instead. Enable the extension once per user after logging in again:
+.PP
+.EX
+gnome\-extensions enable clevo\-control@pavelnikanovich.github.io
+.EE
+.SS Permissions
+A device rule gives the
+.B plugdev
+group write access to the color and brightness of the LED and to the platform
+profile of the
+.B clevo
+handler.
+.SH MODULE PARAMETERS
+Set with
+.B options clevo\-control
+.IR name = value
+in a file under
+.IR /etc/modprobe.d/ .
+.TP
+.BR force_rgb =\fIY|N\fR
+Treat the keyboard as 1-zone RGB when the firmware reports no RGB keyboard
+(default N).
+.TP
+.BR force_profiles =\fIY|N\fR
+Offer the performance profiles on a board they were not verified on
+(default N).
+.SH FILES
+.TP
+.I /var/lib/clevo\-control/backlight\-color
+Remembered backlight color.
+.TP
+.I /usr/lib/udev/rules.d/70\-clevo\-control.rules
+Permissions; starts the backlight service.
+.TP
+.I /usr/lib/systemd/system/clevo\-control\-backlight.service
+Restores the color when the backlight appears, saves it when stopped.
+.SH NOTES
+The module needs Linux 6.14 or later. It conflicts with
+.BR tuxedo\-drivers ,
+which drives the same firmware interface.
+.SH SEE ALSO
+.BR clevoctl (1),
+.BR clevo\-control\-tray (1),
+.BR powerprofilesctl (1),
+.BR modinfo (8)

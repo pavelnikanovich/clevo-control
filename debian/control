@@ -1,0 +1,80 @@
+Source: clevo-control
+Section: utils
+Priority: optional
+Maintainer: Pavel Nikanovich <pavelnikanovich@gmail.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-sequence-dkms,
+ dh-sequence-python3,
+ python3:any,
+Standards-Version: 4.7.2
+Rules-Requires-Root: no
+Homepage: https://github.com/pavelnikanovich/clevo-control
+Vcs-Git: https://github.com/pavelnikanovich/clevo-control.git
+Vcs-Browser: https://github.com/pavelnikanovich/clevo-control
+
+Package: clevo-control-dkms
+Section: kernel
+Architecture: all
+Depends:
+ ${misc:Depends},
+Conflicts:
+ tuxedo-drivers,
+ tuxedo-keyboard-dkms,
+Suggests:
+ clevo-control,
+Description: Clevo laptop keyboard backlight, Fn keys and performance profiles (DKMS)
+ Kernel module for Clevo laptops that exposes, through standard kernel
+ interfaces:
+ .
+  * the RGB keyboard backlight as the LED rgb:kbd_backlight;
+  * the backlight Fn keys (brightness, on/off, next color);
+  * the firmware performance profiles as a platform profile, so that the
+    desktop power mode also switches the firmware profile.
+ .
+ The module needs Linux 6.14 or later and is built with DKMS.
+
+Package: clevo-control
+Architecture: all
+Depends:
+ gir1.2-ayatanaappindicator3-0.1,
+ gir1.2-gtk-3.0,
+ gir1.2-notify-0.7,
+ python3-gi,
+ ${misc:Depends},
+ ${python3:Depends},
+Recommends:
+ clevo-control-dkms,
+ power-profiles-daemon,
+Suggests:
+ gnome-shell-extension-clevo-control,
+Description: tools for the keyboard backlight and performance profile of Clevo laptops
+ Userspace companions of the clevo-control kernel module:
+ .
+  * clevoctl, a command line tool for the keyboard backlight color and
+    brightness and for the firmware performance profile;
+  * clevo-control-tray, a tray applet with a color chooser, a brightness
+    slider and a profile menu;
+  * a device rule and a service that let users change these settings without
+    root and remember the backlight color across reboots.
+
+Package: gnome-shell-extension-clevo-control
+Section: gnome
+Architecture: all
+Depends:
+ gnome-shell (<< 51~),
+ gnome-shell (>= 50~),
+ ${misc:Depends},
+Recommends:
+ clevo-control,
+ clevo-control-dkms,
+ power-profiles-daemon,
+Enhances:
+ gnome-shell,
+Description: Quiet performance profile of Clevo laptops in the GNOME power menu
+ GNOME Shell extension that adds a "Quiet" entry to the Power Mode menu of the
+ quick settings. It selects the firmware performance profile with the lowest
+ power limits, which the three power modes of the desktop cannot reach.
+ .
+ It needs the clevo-control kernel module and the device rule from the
+ clevo-control package.

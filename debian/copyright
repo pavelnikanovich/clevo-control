@@ -1,0 +1,43 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: clevo-control
+Upstream-Contact: Pavel Nikanovich <pavelnikanovich@gmail.com>
+Source: https://github.com/pavelnikanovich/clevo-control
+
+Files: *
+Copyright: 2026 Pavel Nikanovich <pavelnikanovich@gmail.com>
+License: GPL-2+
+
+Files: module/clevo-control.c
+Copyright: 2026 Pavel Nikanovich <pavelnikanovich@gmail.com>
+           TUXEDO Computers GmbH <tux@tuxedocomputers.com>
+License: GPL-2+
+Comment:
+ The firmware protocol spoken by the module (command and sub-command numbers,
+ keyboard type detection, hotkey event codes, 1-zone color calibration factors
+ and the performance profile numbering) is taken from tuxedo-drivers v4.24.0,
+ https://gitlab.com/tuxedocomputers/development/packages/tuxedo-drivers,
+ which is licensed under GPL-2+.
+
+Files: data/io.github.pavelnikanovich.ClevoControl.metainfo.xml
+Copyright: 2026 Pavel Nikanovich <pavelnikanovich@gmail.com>
+License: CC0-1.0
+
+License: GPL-2+
+ This package is free software; you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later
+ version.
+ .
+ This package is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 2 can be found in "/usr/share/common-licenses/GPL-2".
+
+License: CC0-1.0
+ To the extent possible under law, the author has waived all copyright and
+ related or neighboring rights to this work.
+ .
+ On Debian systems, the complete text of the CC0 1.0 Universal license can be
+ found in "/usr/share/common-licenses/CC0-1.0".

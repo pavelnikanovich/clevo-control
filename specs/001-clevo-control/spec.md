@@ -174,10 +174,10 @@ remove and purge, checking the system state after each step.
 
 ---
 
-### User Story 7 - Hotkeys and profiles on Clevo laptops without an RGB keyboard (Priority: P3)
+### User Story 7 - Performance profiles on Clevo laptops without an RGB keyboard (Priority: P3)
 
-The owner of a Clevo laptop with a white or no keyboard backlight still gets the firmware hotkeys
-and the performance profiles.
+The owner of a Clevo laptop with a white or no keyboard backlight still gets the performance
+profiles, and the firmware keeps handling its keys as before.
 
 **Why this priority**: it widens the audience, but cannot be verified on the reference hardware.
 
@@ -187,10 +187,10 @@ with such hardware is available, by the hardware checklist.
 **Acceptance Scenarios**:
 
 1. **Given** firmware that answers the interface check but reports no RGB keyboard, **When** the
-   module loads, **Then** hotkey events and performance profiles are available and no backlight
-   device is created.
-2. **Given** a machine where hotkeys would have no consumer for the backlight keys, **When** the
-   module loads, **Then** it does not take those keys away from the firmware.
+   module loads, **Then** performance profiles are available (where supported) and no backlight
+   or hotkey device is created.
+2. **Given** such a machine, **When** the module loads, **Then** it does not ask the firmware to
+   hand its hotkeys to the operating system.
 
 ---
 
@@ -242,20 +242,22 @@ finds out from the documentation what each part does and what hardware it was te
   as standard key events, and MUST handle the next-colour key itself through the same path the
   rest of the system uses to change the colour, so that suspend state and status views stay
   consistent.
-- **FR-003**: The module MUST forward the firmware touchpad and airplane-mode events as standard
-  key events exactly once per press, whichever firmware interface delivers them.
+- **FR-003**: Where it takes over the firmware hotkeys, the module MUST forward the touchpad and
+  airplane-mode events as standard key events exactly once per press, whichever firmware
+  interface delivers them.
 - **FR-004**: The module MUST expose the firmware performance profiles (quiet, power saving,
   entertainment, performance) as a standard platform profile, only when the firmware is known to
   accept the profile command on the running machine.
-- **FR-005**: Hotkeys and profiles MUST NOT depend on the presence of an RGB keyboard.
+- **FR-005**: Profiles MUST NOT depend on the presence of an RGB keyboard. On machines without a
+  supported RGB keyboard the module MUST leave hotkey handling to the firmware.
 - **FR-006**: The module MUST re-apply colour, brightness and profile after resume and MUST keep
   the backlight off while suspended.
 - **FR-007**: The module MUST refuse to bind to firmware that fails the interface sanity check and
   MUST send no state-changing command before that check.
 - **FR-008**: The module MUST check the status of firmware replies and report rejected commands as
   errors to the caller.
-- **FR-009**: The module MUST be configurable only by a parameter that overrides keyboard
-  detection; initial colour and brightness are not module parameters.
+- **FR-009**: The module MUST be configurable only by parameters that override detection
+  (keyboard type, profile support); initial colour and brightness are not module parameters.
 - **FR-010**: The module's build configuration MUST declare the minimum supported kernel and
   architecture so that unsupported kernels are skipped instead of failing.
 

@@ -62,6 +62,16 @@ Measured on the NH5x_NH7xHP (i7-11800H) from the RAPL package limits
 The limits before any profile was set were 45 W / 93 W, so the firmware starts in
 "entertainment".
 
+What the firmware of the reference machine does with this command (read from its DSDT, BIOS of the
+NH5x_NH7xHP):
+
+- The reply carries no status. The method returns the command number (`0x79`) whether or not the
+  sub-command did anything; only a command number unknown to the dispatcher is answered with
+  `0x80000002`. So a rejected profile cannot be detected from the reply.
+- The profile sub-command is executed only if bit `0x04` of a firmware feature word is set. That
+  word is returned by command `0x60`, which tuxedo-drivers does not use or document. The module
+  does not send it; a board list is used instead (see `clevo_profile_boards` in the module).
+
 ## Desktop behaviour worth knowing
 
 - UPower and `power-profiles-daemon` look for the keyboard backlight and the platform profile when
@@ -74,7 +84,7 @@ The limits before any profile was set were 45 W / 93 W, so the firmware starts i
 
 | Item | NH5x_NH7xHP, kernel 7.0, Ubuntu 26.04 |
 |------|----------------------------------------|
-| Commands through `CLV0001` `_DSM` | see the hardware checklist result in the release notes |
+| Commands through `CLV0001` `_DSM` | backlight color and brightness, profiles and their CPU limits verified |
 | Commands through WMI | not exercised by this module on this machine (ACPI is preferred) |
 | 3-zone keyboard, WMI-only event delivery | no hardware available |
 

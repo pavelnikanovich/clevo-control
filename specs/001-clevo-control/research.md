@@ -177,8 +177,10 @@ v4.24.0 (GPL-2.0-or-later, `clevo_interfaces.h`, `clevo_leds.h`, `clevo_keyboard
 `clevo_acpi.c`, `tuxedo_io/tuxedo_io.c`) in the module header, the README and `debian/copyright`,
 with a TUXEDO copyright line.
 
-## Open item
+## Open item (resolved 2026-10-01)
 
-- **O1 (blocks nothing, improves R2)**: determine from the reference machine's ACPI tables what
-  `SET` commands return on success and on an unknown sub-command; if the status is usable, replace
-  the DMI allow-list with a reply check.
+- **O1**: the DSDT of the reference machine shows that `SET` commands return the command number
+  regardless of the outcome, so R2 stands: the reply cannot establish profile support. The firmware
+  gates the profile sub-command on bit `0x04` of the feature word returned by command `0x60`.
+  That command is not documented by tuxedo-drivers, so by constitution principle II the module
+  does not use it and keeps the board allow-list. Using it would need a constitution amendment.

@@ -38,6 +38,12 @@ class ProfileTest(FakeSysfsTestCase):
         self.add_profile_handler("platform-profile-1", "clevo", profile="low-power")
         self.assertEqual(self.profile.get(), "low-power")
 
+    def test_undecodable_handler_name_is_skipped(self):
+        path = self.add_profile_handler("platform-profile-00", "x")
+        with open(os.path.join(path, "name"), "wb") as f:
+            f.write(b"\xff\xfe\n")
+        self.assertEqual(self.profile.get(), "balanced")
+
     def test_choices(self):
         self.assertEqual(self.profile.choices(),
                          ["low-power", "quiet", "balanced", "performance"])

@@ -52,7 +52,8 @@ no following of user-controlled paths.
 ### VI. Packaging By The Book
 
 Distribution packages MUST be built from a `debian/` directory with debhelper; maintainer scripts
-are generated, not hand-written. Installing or upgrading the package MUST NOT load or unload kernel
+are generated, not hand-written. The one exception is removing the program's own run-time state
+on purge, which no debhelper tool can know about. Installing or upgrading the package MUST NOT load or unload kernel
 modules, restart services owned by other packages, or override an administrator's enable/disable
 choices. Program state lives under `/var/lib`, not `/etc`.
 
@@ -96,4 +97,4 @@ major version bump, added or materially expanded principles a minor bump, clarif
 bump. Specifications, plans and reviews MUST check compliance with the principles above, and any
 deliberate deviation MUST be recorded with its justification in the plan of the feature concerned.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-01 | **Last Amended**: 2026-10-01
+**Version**: 1.0.1 | **Ratified**: 2026-10-01 | **Last Amended**: 2026-10-01

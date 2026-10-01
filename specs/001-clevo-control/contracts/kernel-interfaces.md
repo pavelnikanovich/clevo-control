@@ -32,6 +32,7 @@ the module. Visible through `/sys/class/platform-profile/*/` (attributes `name`,
 
 ## Log messages (stable enough to quote in documentation)
 
-- `clevo-control: N-zone RGB keyboard backlight` (info, once at bind)
-- `clevo-control: performance profiles enabled` (info, once at bind)
-- everything else at debug level
+- `clevo-control <device>: N-zone RGB keyboard backlight` (info, once at bind)
+- `clevo-control <device>: performance profiles enabled` (info, once at bind)
+- failures to set up the backlight or the profiles are reported as errors or warnings; everything
+  else is at debug level

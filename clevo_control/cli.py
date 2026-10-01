@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """clevoctl: keyboard backlight and performance profile of Clevo laptops."""
 import argparse
+import os
 import sys
 
 from . import devices, version
@@ -115,7 +116,13 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         args.func(args)
+        sys.stdout.flush()
     except ClevoError as e:
         print(f"clevoctl: {e}", file=sys.stderr)
+        return 1
+    except BrokenPipeError:
+        # The reader went away (clevoctl status | head); not worth a message.
+        # Point stdout at /dev/null so the interpreter's exit flush stays quiet.
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
         return 1
     return 0

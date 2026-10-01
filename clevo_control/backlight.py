@@ -26,7 +26,7 @@ class Backlight:
     def _read(self, name: str) -> str:
         self._check()
         try:
-            with open(os.path.join(self.path, name)) as f:
+            with open(os.path.join(self.path, name), encoding="ascii", errors="replace") as f:
                 return f.read(4096).strip()
         except OSError as e:
             raise from_oserror(f"read backlight {name}", e) from e

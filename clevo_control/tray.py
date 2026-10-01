@@ -109,6 +109,7 @@ class TrayApplication(Gtk.Application):  # type: ignore[misc]
         self._color_dialog: Gtk.ColorChooserDialog | None = None
         self._brightness_window: BrightnessWindow | None = None
         self._launched = False
+        self._notification: Any = None
 
     # Application life cycle
 
@@ -197,7 +198,13 @@ class TrayApplication(Gtk.Application):  # type: ignore[misc]
 
     def _report(self, error: ClevoError) -> None:
         try:
-            Notify.Notification.new(TITLE, str(error), ICON).show()
+            # One notification, updated in place: dragging the brightness
+            # slider without permission would otherwise produce dozens.
+            if self._notification is None:
+                self._notification = Notify.Notification.new(TITLE, str(error), ICON)
+            else:
+                self._notification.update(TITLE, str(error), ICON)
+            self._notification.show()
         except GLib.Error:
             print(f"clevo-control-tray: {error}", file=sys.stderr)
 

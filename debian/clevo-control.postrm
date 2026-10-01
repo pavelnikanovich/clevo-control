@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# The remembered backlight color is created at run time (tmpfiles.d and
+# clevoctl), so no debhelper tool knows about it.
+if [ "$1" = purge ]; then
+	rm -rf /var/lib/clevo-control
+fi
+
+#DEBHELPER#

@@ -2,7 +2,7 @@
 
 **Feature Branch**: `main` (initial build of the project)
 **Created**: 2026-10-01
-**Status**: Draft
+**Status**: Implemented
 **Input**: User description: "Create a clean project in `_projects` with its own repository, rethink
 every name, and rebuild from scratch a project that fixes the shortcomings found in the review of
 the previous implementation: keyboard backlight, Fn keys and firmware performance profiles for
@@ -161,8 +161,8 @@ remove and purge, checking the system state after each step.
 **Acceptance Scenarios**:
 
 1. **Given** a supported kernel, **When** the packages are installed, **Then** the module is built
-   for the installed kernels and is used from the next boot, with no service restarted and no
-   module loaded or unloaded by the installation.
+   for the installed kernels and is used from the next boot, with no service of another package
+   restarted and no module loaded or unloaded by the installation.
 2. **Given** a kernel older than the minimum, **When** the module package is installed, **Then**
    installation succeeds and the module is skipped for that kernel with a clear message.
 3. **Given** an installed version, **When** a newer one is installed, **Then** the running session
@@ -388,8 +388,8 @@ finds out from the documentation what each part does and what hardware it was te
 - The next-colour key stays handled inside the module (accepted limitation for a possible future
   mainline submission, which is out of scope together with fan control).
 - Documentation and code comments are in English; the first release is version 1.0.0.
-- The previous implementation in `~/clevo_kbd_color` is a private archive: nothing is copied from
-  it verbatim except hardware facts.
+- The previous, unpublished implementation is not a source: nothing is copied from it verbatim
+  except hardware facts.
 - Publication to a public remote, release assets and extension store submission are separate,
   explicitly triggered steps.
 - Build tooling for Debian packages (debhelper, dh-dkms, dh-python) is installed by the maintainer

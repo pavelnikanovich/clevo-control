@@ -3,7 +3,7 @@
 ## Build and check from a clone
 
 ```bash
-make            # kernel module for the running kernel
+make module     # kernel module for the running kernel
 make test       # Python tests against a fake sysfs tree
 make lint       # ruff, mypy, checkpatch, extension syntax, validators, version check
 make check      # all of the above

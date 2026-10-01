@@ -59,13 +59,15 @@ $(BUILD)/dkms.conf: module/dkms.conf VERSION
 	@mkdir -p $(@D)
 	sed 's/#MODULE_VERSION#/$(VERSION)/' $< > $@
 
+# W=1: the extra warnings are part of the project's rules, not an option.
 module:
-	$(MAKE) -C $(KDIR) M=$(CURDIR)/module modules
+	$(MAKE) -C $(KDIR) M=$(CURDIR)/module W=1 modules
 
 test:
 	python3 -m unittest discover -s tests -t .
 	@if command -v gjs >/dev/null; then \
-		gjs -m tests/extension/test_controller.js; \
+		gjs -m tests/extension/test_controller.js && \
+		tests/extension/run-extension-test.sh; \
 	else \
 		echo "gjs not found: extension tests skipped"; \
 	fi
@@ -121,7 +123,7 @@ deb:
 # Does not need kernel headers, so that it works on a build machine without them.
 clean:
 	rm -rf $(BUILD)
-	rm -f module/*.o module/*.ko module/*.mod module/*.mod.c module/.*.cmd \
+	rm -f module/*.o module/.*.o module/*.ko module/*.mod module/*.mod.c module/.*.cmd \
 	      module/Module.symvers module/modules.order
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +
 	rm -rf debian/.debhelper debian/tmp debian/files debian/debhelper-build-stamp \

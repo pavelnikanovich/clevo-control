@@ -194,6 +194,12 @@ class UsageTest(CliTestCase):
         with open(os.path.join(REPO, "VERSION")) as f:
             self.assertEqual(out, f"clevoctl {f.read().strip()}\n")
 
+    def test_closed_pipe_is_not_a_traceback(self):
+        result = subprocess.run(
+            f"{sys.executable} {os.path.join(REPO, 'bin', 'clevoctl')} profile list | true",
+            shell=True, capture_output=True, text=True, check=False)
+        self.assertEqual(result.stderr, "")
+
     def test_script_runs_from_the_source_tree(self):
         result = subprocess.run([sys.executable, os.path.join(REPO, "bin", "clevoctl"), "status"],
                                 capture_output=True, text=True, check=False)

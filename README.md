@@ -34,8 +34,8 @@ Details, measured values and how to report a new model: [docs/hardware.md](docs/
 - Membership of the **`plugdev`** group to change settings without root. Desktop users have it by
   default on Debian and Ubuntu; check with `id -nG`, add with `sudo adduser "$USER" plugdev` and
   log in again.
-- For the tray applet: GTK 3, PyGObject and AyatanaAppIndicator3; on GNOME also an AppIndicator
-  extension (Ubuntu enables one by default).
+- For the tray applet: GTK 3, PyGObject, AyatanaAppIndicator3 and libnotify (with their GObject
+  introspection data); on GNOME also an AppIndicator extension (Ubuntu enables one by default).
 - For the Quiet menu entry: GNOME Shell 50 and `power-profiles-daemon`.
 
 **Secure Boot**: the kernel only loads the module if it is signed with an enrolled key. DKMS
@@ -67,15 +67,28 @@ from the next boot.
 
 ### Other distributions
 
+The device rule and the state directory use the group `plugdev`, which Debian-based systems have
+and others usually do not; create it and join it first.
+
 ```bash
-sudo make install                       # tools, extension and module source (PREFIX=/usr)
+getent group plugdev || sudo groupadd -r plugdev
+sudo usermod -aG plugdev "$USER"
+sudo make install                       # tools, extension and module source, below /usr
 sudo dkms install clevo-control/"$(cat VERSION)"
 sudo systemd-tmpfiles --create clevo-control.conf
 sudo udevadm control --reload
 sudo reboot
 ```
 
-`sudo make uninstall` and `sudo dkms remove clevo-control/"$(cat VERSION)" --all` undo it.
+Keep the default `PREFIX=/usr`: the service unit calls `/usr/bin/clevoctl`.
+
+To remove it again, in this order (DKMS needs the source that `make uninstall` deletes):
+
+```bash
+sudo dkms remove clevo-control/"$(cat VERSION)" --all
+sudo make uninstall
+sudo rm -rf /var/lib/clevo-control
+```
 
 ## Usage
 
@@ -125,6 +138,10 @@ clevoctl profile list
 clevoctl profile set quiet
 ```
 
+The limits are what the firmware sets when the profile is selected. In `performance` the
+sustained limit (PL1) has been seen back at 45 W some time later while the profile was still
+`performance`; what lowers it is not established (see [docs/hardware.md](docs/hardware.md)).
+
 The firmware cannot report which profile is active, nor whether it implements the command. The
 module therefore offers the profiles only on boards where their effect was measured, sets
 `balanced` when it starts and reports the last profile it set. On another board, try
@@ -170,6 +187,8 @@ cat /sys/class/platform-profile/*/name
   loaded. Reboot.
 - **The keyboard is RGB but no backlight device appears**: load the module with `force_rgb=1` and
   report the model.
+- **The backlight keys stopped working after `rmmod clevo-control`**: the firmware keeps reporting
+  them to the operating system until the next boot. Load the module again or reboot.
 
 ## Scope
 

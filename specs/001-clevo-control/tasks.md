@@ -128,8 +128,8 @@ the same file and are therefore sequential.
 
 - [x] T051 Determine firmware reply semantics from the reference machine's ACPI tables; replace the DMI allow-list with a reply check if usable (research O1)
 - [x] T052 Migrate the reference laptop: remove the old package, install the three packages, carry over the saved colour, switch extensions
-- [ ] T053 Run the hardware checklist in quickstart.md, including suspend/resume
-- [ ] T054 Verify every command, path and option in README and man pages
+- [x] T053 Run the hardware checklist in quickstart.md, including suspend/resume
+- [x] T054 Verify every command, path and option in README and man pages
 - [ ] T055 Independent review of the finished project; resolve findings
 
 ---

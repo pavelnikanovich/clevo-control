@@ -46,7 +46,7 @@ fi
 # node only parses files it recognises as modules.
 if need node; then
 	tmp=$(mktemp -d)
-	for f in extension/extension.js extension/controller.js tests/extension/test_controller.js; do
+	for f in extension/*.js tests/extension/*.js tests/extension/shellstub/*.js; do
 		cp "$f" "$tmp/check.mjs"
 		run "syntax $f" node --check "$tmp/check.mjs"
 	done
@@ -81,7 +81,7 @@ if need man; then
 	done
 fi
 
-need shellcheck && run "shellcheck" shellcheck tools/*.sh
+need shellcheck && run "shellcheck" shellcheck tools/*.sh tests/extension/*.sh
 
 run "version" tools/check-version.sh
 

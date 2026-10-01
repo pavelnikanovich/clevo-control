@@ -62,6 +62,11 @@ Measured on the NH5x_NH7xHP (i7-11800H) from the RAPL package limits
 The limits before any profile was set were 45 W / 93 W, so the firmware starts in
 "entertainment".
 
+PL1 in "performance" does not stay put. It reads 60 W right after the profile is set and for at
+least 20 seconds after; on the same boot, with the profile unchanged, it was later found at 45 W
+(PL2 still 109 W). 45 W is also the `max_power` RAPL reports for the long-term constraint. Whether
+the firmware, `thermald` or the suspend/resume in between lowers it has not been established.
+
 What the firmware of the reference machine does with this command (read from its DSDT, BIOS of the
 NH5x_NH7xHP):
 
@@ -86,6 +91,10 @@ NH5x_NH7xHP):
 |------|----------------------------------------|
 | Commands through `CLV0001` `_DSM` | backlight color and brightness, profiles and their CPU limits verified |
 | Commands through WMI | not exercised by this module on this machine (ACPI is preferred) |
+| Backlight and touchpad/airplane Fn keys, Quiet menu entry, tray, suspend/resume | verified by hand |
+| Color restored when the backlight appears at boot | verified |
+| Color saved at shutdown | not yet verified |
+| Kernels other than 7.0 | not built; every kernel API used was checked against the 6.14 headers |
 | 3-zone keyboard, WMI-only event delivery | no hardware available |
 
 ## Reporting another model

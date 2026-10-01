@@ -9,7 +9,7 @@ Bug reports, hardware reports and patches are welcome. For a new laptop model se
 |-----------|---------|
 | `module/` | the kernel module and its DKMS configuration |
 | `clevo_control/`, `bin/` | the Python package behind `clevoctl` and `clevo-control-tray` |
-| `extension/` | the GNOME Shell extension (`controller.js` has no shell imports and is tested with gjs) |
+| `extension/` | the GNOME Shell extension (`controller.js` has no shell imports; `extension.js` is tested against stand-ins for the shell modules in `tests/extension/shellstub`) |
 | `data/` | device rule, service unit, tmpfiles, desktop entries, AppStream metadata |
 | `man/` | manual pages (`@VERSION@` is filled in by `make`) |
 | `tests/` | Python tests against a fake sysfs tree, gjs tests of the extension logic |
@@ -19,8 +19,8 @@ Bug reports, hardware reports and patches are welcome. For a new laptop model se
 ## Building and checking
 
 ```bash
-make module     # build the kernel module (needs the headers of the running kernel)
-make test       # Python tests, and the gjs tests when gjs is installed
+make module     # build the kernel module with W=1 (needs the headers of the running kernel)
+make test       # Python tests, and the extension tests when gjs is installed
 make lint       # ruff, mypy, checkpatch, syntax checks, validators, version check
 make check      # all of the above
 make deb        # Debian packages (debhelper, dh-dkms, dh-python)

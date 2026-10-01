@@ -13,6 +13,7 @@
 // running (the shell then hides its toggle), a separate Quiet Mode toggle is
 // shown instead.
 
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -95,16 +96,33 @@ class PowerMenuIntegration {
             integration._addItems();
         });
         this._injections.overrideMethod(proto, '_sync', original => function (...args) {
+            // Rebuild first: new items carry no check mark until the shell's
+            // own _sync has run over them.
+            if (integration._itemOutdated())
+                this._syncProfiles();
             original.apply(this, args);
             integration._syncItems();
         });
 
-        this._unwatch = controller.watch(() => this._toggle._sync());
-        // Without the daemon's profile list the shell has not built its menu
-        // yet; it calls _syncProfiles() itself once the list arrives.
-        if (this._toggle._proxy.Profiles)
-            this._toggle._syncProfiles();
-        this._toggle._sync();
+        try {
+            this._unwatch = controller.watch(() => this._toggle._sync());
+            // Without the daemon's profile list the shell has not built its
+            // menu yet; it calls _syncProfiles() itself once the list arrives.
+            if (this._toggle._proxy.Profiles)
+                this._toggle._syncProfiles();
+            this._toggle._sync();
+        } catch (e) {
+            // Leave nothing behind when the shell turns out to be incompatible.
+            this.destroy();
+            throw e;
+        }
+    }
+
+    /** Whether the Quiet item has to appear or disappear. */
+    _itemOutdated() {
+        if (this._toggle._profileItems.size === 0)
+            return false;
+        return this._controller.available !== (this._quietItem !== null);
     }
 
     _forgetItems() {
@@ -129,14 +147,8 @@ class PowerMenuIntegration {
     }
 
     _syncItems() {
-        if (!this._quietItem) {
-            // The profile device appeared after the menu was built.
-            if (!this._controller.available || this._toggle._profileItems.size === 0)
-                return;
-            this._toggle._syncProfiles();
-            if (!this._quietItem)
-                return;
-        }
+        if (!this._quietItem)
+            return;
 
         const quiet = this._controller.quiet;
         this._quietItem.setOrnament(quiet
@@ -150,7 +162,8 @@ class PowerMenuIntegration {
     }
 
     destroy() {
-        this._unwatch();
+        this._unwatch?.();
+        this._unwatch = null;
         this._injections.clear();
 
         for (const [item, id] of this._handlers)
@@ -172,12 +185,21 @@ export default class ClevoControlExtension extends Extension {
         this._powerMenu = null;
         this._indicator = null;
 
-        this._toggle = findPowerToggle();
-        if (this._toggle) {
-            this._ownerChangedId = this._toggle._proxy.connect(
-                'notify::g-name-owner', () => this._chooseInterface());
-        } else {
-            console.warn(`${this.uuid}: the Power Mode menu cannot be extended`);
+        this._toggle = null;
+        this._toggleSignals = [];
+        this._idleId = 0;
+        this._choosing = false;
+        if (!this._attachToggle()) {
+            // The quick settings are assembled asynchronously at shell
+            // start-up; the power toggle may simply not be there yet.
+            this._idleId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                this._idleId = 0;
+                if (this._attachToggle())
+                    this._chooseInterface();
+                else
+                    console.warn(`${this.uuid}: the Power Mode menu cannot be extended`);
+                return GLib.SOURCE_REMOVE;
+            });
         }
 
         // Before the menu opens, the profile may have changed without a
@@ -192,11 +214,45 @@ export default class ClevoControlExtension extends Extension {
         this._controller.refresh();
     }
 
+    /** Find the shell's power toggle and follow whether it is in use. */
+    _attachToggle() {
+        this._toggle = findPowerToggle();
+        if (!this._toggle)
+            return false;
+
+        // The shell shows its toggle exactly while power-profiles-daemon is on
+        // the bus. The proxy does not notify when its asynchronous start-up
+        // completes, the toggle's visibility does.
+        this._toggleSignals = [
+            [this._toggle._proxy, this._toggle._proxy.connect(
+                'notify::g-name-owner', () => this._chooseInterface())],
+            [this._toggle, this._toggle.connect(
+                'notify::visible', () => this._chooseInterface())],
+        ];
+        return true;
+    }
+
     /** The menu entry while the shell shows its toggle, our own toggle otherwise. */
     _chooseInterface() {
+        // Setting up the menu entry runs the shell's _sync(), which can change
+        // the toggle's visibility and lead straight back here.
+        if (this._choosing)
+            return;
+        this._choosing = true;
+        try {
+            this._applyInterface();
+        } finally {
+            this._choosing = false;
+        }
+    }
+
+    _applyInterface() {
         const useMenu = this._toggle !== null && this._toggle._proxy.g_name_owner !== null;
 
-        if (useMenu && !this._powerMenu) {
+        if (useMenu && this._powerMenu)
+            return;
+
+        if (useMenu) {
             this._indicator?.destroy();
             this._indicator = null;
             try {
@@ -204,10 +260,7 @@ export default class ClevoControlExtension extends Extension {
                 return;
             } catch (e) {
                 console.warn(`${this.uuid}: the Power Mode menu was not extended: ${e.message}`);
-                this._powerMenu = null;
             }
-        } else if (useMenu) {
-            return;
         }
 
         this._powerMenu?.destroy();
@@ -221,10 +274,13 @@ export default class ClevoControlExtension extends Extension {
     disable() {
         Main.panel.statusArea.quickSettings.menu.disconnect(this._menuOpenId);
         this._menuOpenId = null;
-        if (this._toggle) {
-            this._toggle._proxy.disconnect(this._ownerChangedId);
-            this._ownerChangedId = null;
+        if (this._idleId) {
+            GLib.source_remove(this._idleId);
+            this._idleId = 0;
         }
+        for (const [object, id] of this._toggleSignals)
+            object.disconnect(id);
+        this._toggleSignals = [];
 
         this._powerMenu?.destroy();
         this._powerMenu = null;

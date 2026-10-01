@@ -63,6 +63,12 @@ class BacklightTest(FakeSysfsTestCase):
         with self.assertRaises(ClevoError):
             self.bl.get_brightness()
 
+    def test_undecodable_content_is_an_error_not_an_exception(self):
+        with open(os.path.join(self.led, "brightness"), "wb") as f:
+            f.write(b"\xff\xfe\n")
+        with self.assertRaises(ClevoError):
+            self.bl.get_brightness()
+
     def test_permission_error_names_the_group(self):
         self.skip_if_root()
         os.chmod(os.path.join(self.led, "multi_intensity"), 0o444)

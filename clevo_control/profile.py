@@ -23,7 +23,7 @@ class Profile:
         for entry in entries:
             path = os.path.join(self.class_dir, entry)
             try:
-                with open(os.path.join(path, "name")) as f:
+                with open(os.path.join(path, "name"), encoding="ascii", errors="replace") as f:
                     if f.read(256).strip() == HANDLER_NAME:
                         return path
             except OSError:
@@ -43,7 +43,7 @@ class Profile:
     def _read(self, name: str) -> str:
         path = self._path(name)
         try:
-            with open(path) as f:
+            with open(path, encoding="ascii", errors="replace") as f:
                 return f.read(4096).strip()
         except OSError as e:
             raise from_oserror(f"read performance {name}", e) from e

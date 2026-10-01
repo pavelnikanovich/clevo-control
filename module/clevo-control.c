@@ -242,7 +242,9 @@ static void clevo_led_next_color(struct clevo_laptop *laptop)
 	laptop->subleds[0].intensity = (clevo_kb_palette[next] >> 16) & 0xff;
 	laptop->subleds[1].intensity = (clevo_kb_palette[next] >> 8) & 0xff;
 	laptop->subleds[2].intensity = clevo_kb_palette[next] & 0xff;
-	led_set_brightness(led_cdev, led_cdev->brightness);
+	/* A software blink picks the new color up at its next step. */
+	if (!test_bit(LED_BLINK_SW, &led_cdev->work_flags))
+		led_set_brightness(led_cdev, led_cdev->brightness);
 }
 
 static int clevo_led_register(struct clevo_laptop *laptop)
@@ -352,7 +354,7 @@ static void clevo_laptop_enable_events(struct clevo_laptop *laptop)
 static const struct dmi_system_id clevo_profile_boards[] = {
 	{
 		.matches = {
-			DMI_MATCH(DMI_BOARD_NAME, "NH5x_NH7xHP"),
+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "NH5x_NH7xHP"),
 		},
 	},
 	{ }

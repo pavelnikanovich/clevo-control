@@ -140,7 +140,17 @@ export class ProfileController {
      * Read the profile again. Also the way a handler that appeared, disappeared
      * or was re-created (module reload) is noticed.
      */
-    async refresh() {
+    refresh() {
+        // One at a time: two concurrent runs would each create a file monitor.
+        this._refreshing = (this._refreshing ?? Promise.resolve())
+            .then(() => this._refresh());
+        return this._refreshing;
+    }
+
+    async _refresh() {
+        if (this._cancellable.is_cancelled())
+            return;
+
         try {
             if (this._handler === null) {
                 this._handler = await this._findHandler();

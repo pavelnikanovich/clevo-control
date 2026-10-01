@@ -13,7 +13,7 @@ Shell 50 sources shipped in `libshell-18.so`, and measurements on the reference 
 - otherwise the WMI driver on the method GUID — firmware calls go through WMI, hotkeys arrive on
   the WMI event GUID.
 
-Both back-ends fill a two-function transport (`call`, `call_buffer`) and feed one
+Both back-ends fill a two-function transport (`call`, `read`) and feed one
 `clevo_laptop_event()`. When `CLV0001` is present the WMI method driver declines to bind.
 
 **Rationale**: tuxedo-drivers gives the ACPI interface priority on machines that have it. A single
@@ -134,7 +134,9 @@ and a percentage label, refreshed from sysfs while open. The applet polls for th
 absent. The tools package depends on the GObject introspection data it imports.
 
 **Rationale**: AyatanaAppIndicator3 is what the Ubuntu AppIndicators extension and other desktops
-support; its GLib successor is not packaged with introspection data on the target release.
+support. Its GLib successor (`AyatanaAppIndicatorGlib`) is packaged on the target release but
+needs a different menu model (`Gio.Menu` instead of `Gtk.Menu`); moving to it is left for later,
+at the cost of a deprecation message in the log at start-up.
 
 ## R12. Extension
 

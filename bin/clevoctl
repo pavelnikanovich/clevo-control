@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: GPL-2.0-or-later
+"""Command line control of Clevo laptop keyboard backlight and performance profiles."""
+import os
+import sys
+
+_bindir = os.path.dirname(os.path.realpath(__file__))
+for _candidate in (os.path.join(_bindir, "..", "share", "clevo-control"),
+                   os.path.join(_bindir, "..")):
+    if os.path.isdir(os.path.join(_candidate, "clevo_control")):
+        sys.path.insert(0, os.path.normpath(_candidate))
+        break
+
+from clevo_control.cli import main  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(main())

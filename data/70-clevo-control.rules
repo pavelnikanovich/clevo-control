@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Devices of the clevo-control kernel module.
+
+ACTION=="remove", GOTO="clevo_control_end"
+
+# Keyboard backlight. Members of plugdev may change color and brightness. The
+# LED gets a stable systemd device name, and the service bound to it restores
+# the saved color now and saves the current one when it is stopped.
+SUBSYSTEM=="leds", KERNEL=="rgb:kbd_backlight", DRIVERS=="clevo-control|clevo-control-wmi", \
+  RUN+="/usr/bin/chgrp plugdev /sys%p/multi_intensity /sys%p/brightness", \
+  RUN+="/usr/bin/chmod 664 /sys%p/multi_intensity /sys%p/brightness", \
+  TAG+="systemd", \
+  ENV{SYSTEMD_ALIAS}+="/sys/subsystem/leds/devices/rgb:kbd_backlight", \
+  ENV{SYSTEMD_WANTS}+="clevo-control-backlight.service"
+
+# Firmware performance profile: members of plugdev may select it.
+SUBSYSTEM=="platform-profile", ATTR{name}=="clevo", \
+  RUN+="/usr/bin/chgrp plugdev /sys%p/profile", \
+  RUN+="/usr/bin/chmod 664 /sys%p/profile"
+
+LABEL="clevo_control_end"

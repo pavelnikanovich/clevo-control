@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# State of clevo-control: the remembered keyboard backlight color. Members of
+# plugdev may change the color, so they may also remember it; the setgid bit
+# keeps the file in that group when root saves it at shutdown.
+d /var/lib/clevo-control 2775 root plugdev -

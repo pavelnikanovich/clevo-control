@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Started by udev when the keyboard backlight appears (70-clevo-control.rules)
+# and stopped when it goes away or the system shuts down.
+[Unit]
+Description=Restore and save the Clevo keyboard backlight color
+Documentation=man:clevoctl(1) man:clevo-control(7)
+BindsTo=sys-subsystem-leds-devices-rgb:kbd_backlight.device
+After=sys-subsystem-leds-devices-rgb:kbd_backlight.device systemd-tmpfiles-setup.service
+RequiresMountsFor=/var/lib/clevo-control
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/clevoctl backlight restore
+# The LED is already gone when the module was unloaded; that is not a failure.
+ExecStop=-/usr/bin/clevoctl backlight save
+NoNewPrivileges=yes
+PrivateNetwork=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/clevo-control

@@ -298,8 +298,8 @@ finds out from the documentation what each part does and what hardware it was te
 
 **System integration and packaging**
 
-- **FR-024**: Members of one documented group MUST be able to change colour and profile without
-  administrator rights; brightness uses the desktop's existing mechanism.
+- **FR-024**: Members of one documented group MUST be able to change colour, brightness and
+  profile without administrator rights.
 - **FR-025**: Restoring and saving the colour MUST be done by a service unit bound to the
   backlight device, not by programs started from device rules.
 - **FR-026**: The project MUST build three packages: the module (DKMS), the tools with the tray,

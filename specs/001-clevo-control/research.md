@@ -96,12 +96,13 @@ configuration directory, unbounded parse as root, non-atomic).
 
 ## R8. Who may change colour and profile
 
-**Decision**: a device rule gives group `plugdev` write access to `multi_intensity` of the LED and
-to `profile` of the `clevo` platform-profile device. `brightness` is left alone: logind and
-UPower already provide it to the active session.
+**Decision**: a device rule gives group `plugdev` write access to `multi_intensity` and
+`brightness` of the LED and to `profile` of the `clevo` platform-profile device.
 
 **Rationale**: `chgrp`/`chmod` from `RUN` is the established idiom for sysfs attributes (GROUP and
 MODE apply to device nodes only). Desktop users are members of `plugdev` on Debian and Ubuntu.
+logind and UPower already offer the brightness to the active session, but the command line tool
+must also work over SSH and from scripts, so it writes sysfs like everything else.
 
 ## R9. Restore and save of the colour
 

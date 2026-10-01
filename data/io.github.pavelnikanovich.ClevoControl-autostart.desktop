@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Clevo Control
+Comment=Tray applet for the keyboard backlight of Clevo laptops
+Exec=clevo-control-tray
+Icon=keyboard-brightness-symbolic
+Terminal=false
+NoDisplay=true
+StartupNotify=false
+X-GNOME-Autostart-enabled=true

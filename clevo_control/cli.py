@@ -1,35 +1,19 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """clevoctl: keyboard backlight and performance profile of Clevo laptops."""
 import argparse
-import os
 import sys
 
-from . import version
-from .backlight import DEFAULT_LED, Backlight
+from . import devices, version
 from .colors import NAMED_COLORS, format_color, parse_brightness, parse_color, percent_of
 from .errors import ClevoError
-from .profile import DEFAULT_CLASS_DIR, Profile
-from .state import DEFAULT_STATE, ColorState
-
-
-def _backlight() -> Backlight:
-    return Backlight(os.environ.get("CLEVO_CONTROL_LED", DEFAULT_LED))
-
-
-def _profile() -> Profile:
-    return Profile(os.environ.get("CLEVO_CONTROL_PROFILE_CLASS", DEFAULT_CLASS_DIR))
-
-
-def _state() -> ColorState:
-    return ColorState(os.environ.get("CLEVO_CONTROL_STATE", DEFAULT_STATE))
 
 
 def cmd_status(_args: argparse.Namespace) -> None:
     lines = []
-    backlight = _backlight()
+    backlight = devices.backlight()
     if backlight.available():
         level, maximum = backlight.get_brightness(), backlight.max_brightness()
-        saved = _state().load()
+        saved = devices.color_state().load()
         lines += [
             "backlight:",
             f"  color: #{format_color(backlight.get_color())}",
@@ -39,58 +23,53 @@ def cmd_status(_args: argparse.Namespace) -> None:
     else:
         lines.append("backlight: not available")
 
-    profile = _profile()
+    profile = devices.profile()
     lines.append(f"profile: {profile.get() if profile.available() else 'not available'}")
     print("\n".join(lines))
 
 
 def cmd_backlight_color(args: argparse.Namespace) -> None:
-    color = parse_color(args.color)
-    _backlight().set_color(color)
-    try:
-        _state().save(color)
-    except ClevoError as e:
-        raise ClevoError(f"color set, but {e}") from e
+    devices.set_color_and_remember(parse_color(args.color))
 
 
 def cmd_backlight_brightness(args: argparse.Namespace) -> None:
-    backlight = _backlight()
+    backlight = devices.backlight()
     backlight.set_brightness(parse_brightness(args.level, backlight.max_brightness()))
 
 
 def cmd_backlight_on(_args: argparse.Namespace) -> None:
-    backlight = _backlight()
+    backlight = devices.backlight()
     if backlight.get_brightness() == 0:
         backlight.set_brightness(max(1, backlight.max_brightness() // 2))
 
 
 def cmd_backlight_off(_args: argparse.Namespace) -> None:
-    _backlight().set_brightness(0)
+    devices.backlight().set_brightness(0)
 
 
 def cmd_backlight_save(_args: argparse.Namespace) -> None:
-    _state().save(_backlight().get_color())
+    devices.color_state().save(devices.backlight().get_color())
 
 
 def cmd_backlight_restore(_args: argparse.Namespace) -> None:
-    color = _state().load()
+    color = devices.color_state().load()
     if color is not None:
-        _backlight().set_color(color)
+        devices.backlight().set_color(color)
 
 
 def cmd_profile_list(_args: argparse.Namespace) -> None:
-    profile = _profile()
+    profile = devices.profile()
     active = profile.get()
     for choice in profile.choices():
         print(f"{'*' if choice == active else ' '} {choice}")
 
 
 def cmd_profile_get(_args: argparse.Namespace) -> None:
-    print(_profile().get())
+    print(devices.profile().get())
 
 
 def cmd_profile_set(args: argparse.Namespace) -> None:
-    _profile().set(args.profile)
+    devices.profile().set(args.profile)
 
 
 def build_parser() -> argparse.ArgumentParser:

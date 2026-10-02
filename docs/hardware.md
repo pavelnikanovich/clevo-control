@@ -93,6 +93,7 @@ NH5x_NH7xHP):
 | Commands through WMI | not exercised by this module on this machine (ACPI is preferred) |
 | Backlight and touchpad/airplane Fn keys, Quiet menu entry, tray, suspend/resume | verified by hand |
 | Color saved at shutdown (chosen with Fn + `/`) and restored at boot | verified |
+| Packages: `apt purge` of all three, reboot, fresh install from the PPA, reboot | verified: nothing of the packages is left after the purge (files, state directory, DKMS tree, module files, units), the system boots clean without them, and the fresh install works after one reboot. What stays is the user's own list of enabled extensions and the brightness that systemd-backlight keeps for the LED |
 | Kernels other than 7.0 | not built; every kernel API used was checked against the 6.14 headers |
 | 3-zone keyboard, WMI-only event delivery | no hardware available |
 

@@ -33,6 +33,27 @@ it must report nothing. (With the Ubuntu profile lintian objects to the `unstabl
 `debian/changelog`; the ITP-bug warning for the first changelog entry is overridden, because these
 packages are built from this repository and not uploaded to the Debian archive.)
 
+## Releasing
+
+1. Set `VERSION`, add the section to `CHANGELOG.md` and the entry to `debian/changelog`; `make check`.
+2. Tag the commit `v<version>` and push the branch and the tag.
+3. `make deb` and attach the three packages to the GitHub release.
+4. For the PPA, build the source package and upload it:
+
+   ```bash
+   tools/ppa-source.sh -k <your OpenPGP key>     # -s SERIES, -r REVISION; default resolute, 1
+   dput ppa:<launchpad user>/clevo-control build/ppa/clevo-control_*_source.changes
+   ```
+
+   The upstream tarball is made from the tag (without `debian/`) and is the same file every time;
+   the packaging is `debian/` of the current commit. The upload is versioned
+   `<version>-<n>~<series><revision>`, so it never shadows a package from the distribution. A
+   change to the packaging alone needs a new `debian/changelog` entry (`-2`, …) and no new tag.
+
+   Launchpad builds from the declared build dependencies with no network access. To try that
+   first, unpack the `.dsc` in a clean `ubuntu:<release>` container, install the build
+   dependencies with `mk-build-deps` and run `dpkg-buildpackage -b` under `unshare -n`.
+
 ## Rules
 
 They are spelled out in [.specify/memory/constitution.md](.specify/memory/constitution.md). In

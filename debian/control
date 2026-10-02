@@ -1,14 +1,12 @@
 Source: clevo-control
 Section: utils
-Priority: optional
 Maintainer: Pavel Nikanovich <pavelnikanovich@gmail.com>
 Build-Depends:
  debhelper-compat (= 13),
  dh-sequence-dkms,
  dh-sequence-python3,
  python3:any,
-Standards-Version: 4.7.2
-Rules-Requires-Root: no
+Standards-Version: 4.7.3
 Homepage: https://github.com/pavelnikanovich/clevo-control
 Vcs-Git: https://github.com/pavelnikanovich/clevo-control.git
 Vcs-Browser: https://github.com/pavelnikanovich/clevo-control

@@ -139,7 +139,8 @@ async function main() {
     check('monitor follows the new handler', controller.profile, 'balanced');
 
     // A profile attribute that cannot be written reports an error and changes nothing.
-    if (GLib.getenv('USER') !== 'root') {
+    // Permission checks do not apply to root (USER may be unset, as in a container).
+    if (new Gio.Credentials().get_unix_user() !== 0) {
         GLib.chmod(`${dir2}/profile`, 0o444);
         GLib.chmod(dir2, 0o555);
         await controller.enterQuiet();

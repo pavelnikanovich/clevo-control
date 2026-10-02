@@ -48,9 +48,22 @@ Both drive the same firmware interface and register the same LED.
 
 ## Install
 
+### Ubuntu 26.04 from the PPA
+
+```bash
+sudo add-apt-repository ppa:pavelnikanovich/clevo-control
+sudo apt install clevo-control-dkms clevo-control gnome-shell-extension-clevo-control
+sudo reboot
+gnome-extensions enable clevo-control@pavelnikanovich.github.io   # GNOME only, once per user
+```
+
+Updates then arrive with the system's. The PPA is built for Ubuntu 26.04 only.
+
 ### Debian, Ubuntu and derivatives
 
-Build the packages (`debhelper`, `dh-dkms`, `dh-python` are needed) and install them:
+The packages of a release are attached to it on the
+[releases page](https://github.com/pavelnikanovich/clevo-control/releases). To build them
+yourself (`debhelper`, `dh-dkms`, `dh-python` are needed) and install them:
 
 ```bash
 sudo apt install debhelper dh-dkms dh-python
